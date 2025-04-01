@@ -76,10 +76,10 @@
         home.hidden = true
         prompts_global.hidden = false
         generatePrompt(bInput.value)
+        socket.emit("answerWaited", socket.id, bInput.value)
         bInput.remove()
         gInput.disabled = true
         gSubmit.disabled = true
-        socket.emit("answerWaited", socket.id, bInput.value)
     })
     gForm.addEventListener("submit",(e)=>{
         const prompts = document.getElementById("prompts_in")
@@ -88,8 +88,8 @@
         gInput.disabled = true
         gSubmit.disabled = true
         generatePrompt(gInput.value)
-        gInput.value = ""
         socket.emit("answerWaited", socket.id, gInput.value)
+        gInput.value = ""
     })
     socket.on("connect",()=>{
         socket.on("answer",(id, answer)=>{
