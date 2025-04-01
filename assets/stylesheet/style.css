@@ -1,0 +1,83 @@
+@font-face {
+    font-family: "Rubik";
+    src: url("/fonts/Rubik-Regular.ttf");
+}
+@font-face {
+    font-family: "Marianne";
+    src: url("/fonts/Marianne-Medium.otf");
+}
+html{
+    height: 85%;
+}
+body{
+    height: 85%;
+    background-color: rgb(175, 221, 225);
+    color: white;
+    font-family: "Marianne";
+}
+.bubble{
+    height: 8rem;
+    width: 8rem;
+    opacity: 0.3;
+    position: fixed;
+    z-index: -1;
+    border-radius: 100%;
+    transition: 15s ease;
+}
+#home{
+    height: 100%;
+    text-align: center;
+    position: relative;
+    animation: makeHomeAppear 1s ease-in-out 1 forwards;
+}
+#main_title{
+    font-size: 40pt;
+    margin-top: 10%;
+}
+.global_text_input{
+    position: fixed;
+    width: 90%;
+    left: 50%;
+    bottom: 5px;
+    height: 10vh;
+    border-radius: 10px;
+    border: solid rgb(253, 121, 178) 2px;
+    background-color: rgb(255, 165, 204);
+    transform: translate(-50%, 0);
+    outline: none;
+    font-family: "Marianne";
+    color: white;
+    padding-left: 5px;
+}
+#prompts{
+    height: 100%;
+}
+#prompts_in{
+    height: 90%;
+    margin-top: 10%;
+    overflow: scroll;
+}
+.global_prompt{
+    display: block;
+    margin-left: auto;
+    text-align: right;
+    width: fit-content;
+    min-height: 10vh;
+    border-radius: 20px;
+    padding-left: 5px;
+    padding-right: 5px;
+    height: fit-content;
+    max-width: 50%;
+    background-color: rgb(255, 165, 204);
+}
+.global_answer{
+    color: gray;
+    margin-left: 10px;
+    width: fit-content;
+    max-width: 50%;
+}
+/* ANIMATIONS */
+@keyframes makeHomeAppear {
+    0%{margin-top: -50%;}
+    100%{margin-top: 0;}
+}

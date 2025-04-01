@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dologGPT</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <link rel="icon" href="/icon.png">
+    <link rel="stylesheet" href="/stylesheet/style.css">
+</head>
+<body>
+    <div id="background"></div>
+    <div id="home">
+        <h1 id="main_title">dologGPT</h1>
+        <form id="base_form">
+        <input style="position: absolute;" autocomplete="off" type="text" required id="base_input" class="global_text_input" placeholder="Demandez quelque chose...">
+        <input type="submit" hidden>
+    </form>
+    </div>
+    <div id="prompts" hidden>
+            <h3 style="position: fixed; top: 0; left: 5px; color: gray;">dologGPT</h3>
+            <div id="prompts_in">
+            </div>
+            <form id="global_form">
+            <input autocomplete="off" type="text" id="global_input" class="global_text_input" placeholder="Demandez quelque chose...">
+        <input type="submit" hidden id="global_submit">
+        </form>
+        </div>
+    <script>
+        // FUNCTIONS & DEFINITIONS
+        var socket = io();
+        const bg = document.getElementById("background")
+        const home = document.getElementById("home")
+        const prompts_global = document.getElementById("prompts")
+        const baseForm = document.getElementById("base_form")
+        const gSubmit = document.getElementById("global_submit")
+        const gInput = document.getElementById("global_input")
+        const gForm = document.getElementById("global_form")
+        function generatePrompt(prompt){
+            const prompts = document.getElementById("prompts_in")
+            const div_parent = document.createElement("div")
+            div_parent.className = "global_prompt"
+            const div_2 = document.createElement("div")
+            div_2.style = "height: 100%; display: flex; align-items: center"
+            const p = document.createElement("p")
+            p.innerText = prompt
+            div_2.appendChild(p)
+            div_parent.appendChild(div_2)
+            prompts.appendChild(div_parent)
+        }
+        function generateAnswer(answer, speed){
+            const prompts = document.getElementById("prompts_in")
+            const div = document.createElement("div")
+            div.className = "global_answer"
+            const p = document.createElement("p")
+            div.appendChild(p)
+            prompts.appendChild(div)
+            let i = 0
+            const interval = setInterval(()=>{
+                if(i >= answer.length){
+                    gInput.disabled = false
+                    gInput.focus()
+                    gSubmit.disabled = false
+                    return clearInterval(interval)}
+                    prompts.scrollTo(0, prompts.scrollHeight);
+                    p.innerHTML += answer.slice(i, i + speed); // Ajoute plusieurs caractères
+                    i += speed-1
+                i++
+            },0)
+        }
+    // SCRIPT
+    baseForm.addEventListener("submit",(e)=>{
+        const bInput = document.getElementById("base_input")
+        e.preventDefault()
+        home.hidden = true
+        prompts_global.hidden = false
+        generatePrompt(bInput.value)
+        bInput.remove()
+        gInput.disabled = true
+        gSubmit.disabled = true
+        socket.emit("answerWaited", socket.id, bInput.value)
+    })
+    gForm.addEventListener("submit",(e)=>{
+        const prompts = document.getElementById("prompts_in")
+        e.preventDefault()
+        prompts.scrollTo(0, prompts.scrollHeight);
+        gInput.disabled = true
+        gSubmit.disabled = true
+        generatePrompt(gInput.value)
+        gInput.value = ""
+        socket.emit("answerWaited", socket.id, gInput.value)
+    })
+    socket.on("connect",()=>{
+        socket.on("answer",(id, answer)=>{
+            if(id == socket.id){
+                generateAnswer(answer, 3)
+            }
+        })
+    })
+    function generateBackground(count){
+        const colors = ["#FFF7CC", "#FF9BA5","#F9FFAD", "#FFC291", "#C6FFCE"]
+        for(let i = 0; i < count; i++){
+            const bubble = document.createElement("div")
+            bubble.style.backgroundColor = colors[Math.floor(Math.random() * colors.length+1)]
+            bubble.className = "bubble"
+            bubble.hidden = true
+            bg.appendChild(bubble)
+            bubble.hidden = false
+            const moveY = Math.floor(Math.random() * (document.body.clientHeight))
+            const moveX = Math.floor(Math.random() * (document.body.clientWidth))
+            const moveY2 = Math.floor(Math.random() * (document.body.clientHeight))
+            const moveX2 = Math.floor(Math.random() * (document.body.clientWidth))
+            bubble.style.left = `${moveX}px`
+            bubble.style.top = `${moveY}px`
+            bubble.animate([
+                {left: `${moveX}px`, top:`${moveY}px`},
+                {left: `${moveX2}px`, top:`${moveY2}px`}
+            ],
+        {duration: 10000,
+            easing: "ease"
+        }
+        )
+            setInterval(()=>{
+                bubble.hidden = false
+                const moveY = Math.floor(Math.random() * (document.body.clientHeight))
+                const moveX = Math.floor(Math.random() * (document.body.clientWidth))
+                bubble.style.left = `${moveX}px`
+                bubble.style.top = `${moveY}px`
+            },10000)
+        }
+    }
+    generateBackground(25)
+    </script>
+</body>
+</html>
